@@ -3,6 +3,10 @@ import random
 # Power scaling factor
 ALPHA = 2.5
 TASK_TYPE = ["CPU_BOUND", "IO_BOUND", "MIXED", "BACKGROUND"]
+# Frequencies in MHz
+FREQS = [500, 800, 1000, 1500]
+IO_RANGE = [1, 50]
+CPU_BURST_RANGE = [5, 100]
 
 class Task:
     def __init__(self, id, cpu_burst_time: int, io_interrupts: int, task_type):
@@ -18,18 +22,16 @@ def generate_task(task_id):
     task_type = random.choice(TASK_TYPE)
 
     if task_type == "CPU_BOUND":
-        cpu_burst_time = random.randint(50, 100)
-        io_interrupts = random.randint(1, 5)
+        cpu_burst_time = random.randint(CPU_BURST_RANGE[0] // 2, CPU_BURST_RANGE[1])
+        io_interrupts = random.randint(IO_RANGE[0], IO_RANGE[1] // 4)
     elif task_type == "IO_BOUND":
-        cpu_burst_time = random.randint(10, 30)
-        io_interrupts = random.randint(20, 50)
+        cpu_burst_time = random.randint(CPU_BURST_RANGE[0], CPU_BURST_RANGE[1] // 4)
+        io_interrupts = random.randint(IO_RANGE[0] // 2, IO_RANGE[1])
     elif task_type == "MIXED":
-        cpu_burst_time = random.randint(30, 60)
-        io_interrupts = random.randint(10, 30)
+        cpu_burst_time = random.randint(CPU_BURST_RANGE[0], CPU_BURST_RANGE[1] // 2)
+        io_interrupts = random.randint(IO_RANGE[0], IO_RANGE[1] // 2)
     elif task_type == "BACKGROUND":
-        cpu_burst_time = random.randint(5, 15)
-        io_interrupts = random.randint(1, 5)
+        cpu_burst_time = random.randint(CPU_BURST_RANGE[0], CPU_BURST_RANGE[1] // 4)
+        io_interrupts = random.randint(IO_RANGE[0], IO_RANGE[1] // 4)
 
     return Task(task_id, cpu_burst_time, io_interrupts, task_type)
-
-print(generate_task(0))
