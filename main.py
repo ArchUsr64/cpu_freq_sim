@@ -51,10 +51,13 @@ class CPU:
         self.current_freq = self.algorithm(task, self.freqs)
 
     def task_time(self, task: Task) -> float:
-        return (task.remaining_time / self.current_freq)
+        return task.io_interrupts + self.task_cpu_time(task)
 
-    def power_consumption(self, time: float) -> float:
-        return (self.current_freq ** self.alpha) * time
+    def task_cpu_time(self, task: Task) -> float:
+        return task.remaining_time / (self.current_freq / min(self.freqs))
+
+    def power_consumption(self, task: Task) -> float:
+        return (self.current_freq ** self.alpha) * self.task_time(task)
 
 class CPUAlgorithm:
     # Different CPU frequency adjustment strategies.
@@ -127,12 +130,12 @@ for cpu in cpus:
     for task in tasks:
         cpu.adjust_frequency(task)
         time_taken = cpu.task_time(task)
-        power_used = cpu.power_consumption(time_taken)
+        power_used = cpu.power_consumption(task)
 
         total_time += time_taken
         total_power += power_used
 
-        # print(f"Executing {task}, CPU Freq: {cpu.current_freq} MHz, Time: {time_taken:.3f}s, Power: {power_used:.3f} units")
+        # print(f"{task}, Freq: {cpu.current_freq}MHz, Time: {time_taken:.3f}s")
 
-    print(f"Total time: {total_time:.1f}s, Total power: {total_power // 1000}kUnits")
+    print(f"Time: {total_time:.1f}s, Power: {total_power // 1000}kUnits, Efficiency:\t{TASKS_COUNT /(total_time * total_power)}")
 
