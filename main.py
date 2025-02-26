@@ -6,9 +6,10 @@ ALPHA = 2.5
 # Sorted from high priority to low
 TASK_TYPE = ["CPU_BOUND", "IO_BOUND", "MIXED", "BACKGROUND"]
 # Frequencies in MHz
-FREQS = [500, 800, 1000, 1500]
-IO_RANGE = [1, 50]
+FREQS = [400, 800, 1000, 1200]
+IO_RANGE = [10, 500]
 CPU_BURST_RANGE = [5, 100]
+TASKS_COUNT = 20_000
 
 class Task:
     def __init__(self, id, cpu_burst_time: int, io_interrupts: int, task_type):
@@ -80,9 +81,15 @@ class CPUAlgorithm:
     def random_selection(task, freqs):
         return random.choice(freqs)
 
-cpus = [CPU(FREQS, CPUAlgorithm.linear_interpolation), CPU(FREQS, CPUAlgorithm.static_frequency)]
+cpus = [
+    CPU(FREQS, CPUAlgorithm.static_frequency),
+    CPU(FREQS, CPUAlgorithm.linear_interpolation),
+    CPU(FREQS, CPUAlgorithm.threshold_based),
+    CPU(FREQS, CPUAlgorithm.proportional_scaling),
+    CPU(FREQS, CPUAlgorithm.random_selection),
+]
 
-tasks = [generate_task(i) for i in range(1_000)]
+tasks = [generate_task(i) for i in range(TASKS_COUNT)]
 tasks.sort(key = lambda x: TASK_TYPE.index(x.task_type))
 
 for cpu in cpus:
