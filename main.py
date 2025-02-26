@@ -2,6 +2,8 @@ import random
 from algorithm import IOAwareCPUAlgorithm
 import numpy as np
 
+random.seed(0)
+
 # Power scaling factor
 ALPHA = 2.5
 # Sorted from high priority to low
