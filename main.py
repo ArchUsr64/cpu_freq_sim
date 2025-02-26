@@ -1,4 +1,5 @@
 import random
+from algorithm import IOAwareCPUAlgorithm
 import numpy as np
 
 # Power scaling factor
@@ -81,12 +82,39 @@ class CPUAlgorithm:
     def random_selection(task, freqs):
         return random.choice(freqs)
 
+io_aware_algorithm = IOAwareCPUAlgorithm(
+    # Standard CPU frequency levels (in MHz)
+    freqs=FREQS,
+    # Power scaling factor
+    alpha=ALPHA,
+    # Moderate smoothing to react to trends without overfitting
+    smoothing_factor=1,
+    # Slight penalty for I/O-heavy tasks
+    penalty_factor=0.15,
+    # Ensures low-I/O tasks still get some CPU
+    min_freq_weight=0.5,
+    # Biases towards running CPU-bound tasks efficiently
+    max_freq_weight=2.75,
+    # Adaptive threshold for defining "high" I/O intensity
+    io_threshold=sum(IO_RANGE) / 2,
+    # Uses last n tasks to smooth trends
+    history_size=10,
+    # Moderate entropy impact (keeps tuning flexible)
+    entropy_weight=0.25,
+    # Keeps prediction influence subtle, not overcorrecting
+    prediction_factor=0.35,
+    # Removes extreme cases from historical data
+    outlier_rejection=True,
+)
+
+
 cpus = [
     CPU(FREQS, CPUAlgorithm.static_frequency),
     CPU(FREQS, CPUAlgorithm.linear_interpolation),
     CPU(FREQS, CPUAlgorithm.threshold_based),
     CPU(FREQS, CPUAlgorithm.proportional_scaling),
     CPU(FREQS, CPUAlgorithm.random_selection),
+    CPU(FREQS, io_aware_algorithm.adjust_frequency)
 ]
 
 tasks = [generate_task(i) for i in range(TASKS_COUNT)]
